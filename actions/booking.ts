@@ -1,6 +1,6 @@
 "use server";
 
-import { createServiceClient } from "@/lib/supabase/server";
+import { createServiceClient, createClient } from "@/lib/supabase/server";
 import { stripe } from "@/lib/stripe";
 import { z } from "zod";
 
@@ -93,7 +93,7 @@ export async function getAvailableSlots(
   date: string,
   durationMinutes: number
 ) {
-  const supabase = await createServiceClient();
+  const supabase = await createClient();
   const dayOfWeek = new Date(date).getDay();
 
   const { data: hours } = await supabase
