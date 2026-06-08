@@ -18,7 +18,7 @@ export default async function BookPage({
 
   const supabase = await createClient();
 
-  const { data: profile } = await supabase
+  const { data: profile, error: profileError } = await supabase
     .from("profiles")
     .select("*")
     .eq("id", shopId)
@@ -29,6 +29,7 @@ export default async function BookPage({
     return (
       <main className="flex items-center justify-center min-h-screen bg-zinc-950 text-white">
         <p className="text-zinc-400">הספרייה לא נמצאה.</p>
+        {profileError && <p className="text-red-400 text-xs mt-2">{profileError.message} | code: {profileError.code}</p>}
       </main>
     );
   }
