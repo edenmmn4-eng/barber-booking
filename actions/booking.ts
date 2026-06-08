@@ -22,7 +22,7 @@ export async function createBooking(formData: unknown) {
   }
 
   const data = parsed.data;
-  const supabase = await createServiceClient();
+  const supabase = await createClient();
 
   const { data: service, error: serviceError } = await supabase
     .from("services")
