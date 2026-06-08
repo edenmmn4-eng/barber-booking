@@ -1,4 +1,4 @@
-import { createServiceClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { BookingFlow } from "@/components/booking/BookingFlow";
 
 export default async function BookPage({
@@ -16,7 +16,7 @@ export default async function BookPage({
     );
   }
 
-  const supabase = await createServiceClient();
+  const supabase = await createClient();
 
   const { data: profile } = await supabase
     .from("profiles")
