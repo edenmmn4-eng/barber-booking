@@ -69,16 +69,15 @@ export async function createBooking(formData: unknown) {
     }
   }
 
-  const { data: appointment, error } = await supabase
+  const serviceSupabase = await createServiceClient();
+  const { error } = await serviceSupabase
     .from("appointments")
     .insert({
       ...data,
       client_email: data.client_email || null,
       payment_intent_id: paymentIntentId,
       status: (service.deposit_amount > 0 && stripeConfigured) ? "pending" : "confirmed",
-    })
-    .select()
-    .single();
+    });
 
   if (error) {
     return { error: "שגיאה ביצירת התור: " + error.message };
@@ -86,7 +85,7 @@ export async function createBooking(formData: unknown) {
 
   return {
     success: true,
-    appointment,
+    appointment: null,
     requiresPayment: service.deposit_amount > 0,
     paymentIntentId,
     depositAmount: service.deposit_amount,
