@@ -47,21 +47,26 @@ export async function createBooking(formData: unknown) {
   }
 
   let paymentIntentId: string | null = null;
+  const stripeConfigured = process.env.STRIPE_SECRET_KEY?.startsWith("sk_");
 
-  if (service.deposit_amount > 0) {
-    const paymentIntent = await stripe.paymentIntents.create({
-      amount: service.deposit_amount,
-      currency: "ils",
-      metadata: {
-        shop_id: data.shop_id,
-        service_id: data.service_id,
-        client_name: data.client_name,
-        client_phone: data.client_phone,
-        appointment_date: data.appointment_date,
-        appointment_time: data.appointment_time,
-      },
-    });
-    paymentIntentId = paymentIntent.id;
+  if (service.deposit_amount > 0 && stripeConfigured) {
+    try {
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: service.deposit_amount,
+        currency: "ils",
+        metadata: {
+          shop_id: data.shop_id,
+          service_id: data.service_id,
+          client_name: data.client_name,
+          client_phone: data.client_phone,
+          appointment_date: data.appointment_date,
+          appointment_time: data.appointment_time,
+        },
+      });
+      paymentIntentId = paymentIntent.id;
+    } catch {
+      // Stripe not available - continue without payment
+    }
   }
 
   const { data: appointment, error } = await supabase
@@ -70,7 +75,7 @@ export async function createBooking(formData: unknown) {
       ...data,
       client_email: data.client_email || null,
       payment_intent_id: paymentIntentId,
-      status: service.deposit_amount > 0 ? "pending" : "confirmed",
+      status: (service.deposit_amount > 0 && stripeConfigured) ? "pending" : "confirmed",
     })
     .select()
     .single();
