@@ -69,7 +69,7 @@ export async function createBooking(formData: unknown) {
     }
   }
 
-  const serviceSupabase = await createServiceClient();
+  const serviceSupabase = createServiceClient();
   const { error } = await serviceSupabase
     .from("appointments")
     .insert({

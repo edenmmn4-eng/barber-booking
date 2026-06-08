@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
 
   if (event.type === "payment_intent.succeeded") {
     const intent = event.data.object as Stripe.PaymentIntent;
-    const supabase = await createServiceClient();
+    const supabase = createServiceClient();
 
     const { data: appointment } = await supabase
       .from("appointments")
