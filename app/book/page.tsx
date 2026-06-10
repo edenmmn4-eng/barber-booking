@@ -1,5 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import { BookingFlow } from "@/components/booking/BookingFlow";
+import { redirect } from "next/navigation";
 
 export default async function BookPage({
   searchParams,
@@ -9,11 +10,7 @@ export default async function BookPage({
   const { shop: shopId } = await searchParams;
 
   if (!shopId) {
-    return (
-      <main className="flex items-center justify-center min-h-screen bg-zinc-950 text-white">
-        <p className="text-zinc-400">קישור לא תקין. בקש קישור ישיר מהספר שלך.</p>
-      </main>
-    );
+    redirect("/");
   }
 
   const supabase = await createClient();
