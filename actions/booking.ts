@@ -1,6 +1,6 @@
 "use server";
 
-import { createServiceClient, createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { stripe } from "@/lib/stripe";
 import { z } from "zod";
 
@@ -69,8 +69,7 @@ export async function createBooking(formData: unknown) {
     }
   }
 
-  const serviceSupabase = createServiceClient();
-  const { error } = await serviceSupabase
+  const { error } = await supabase
     .from("appointments")
     .insert({
       ...data,
