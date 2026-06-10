@@ -80,6 +80,7 @@ export async function createBooking(formData: unknown) {
     });
 
   if (error) {
+    console.error("Supabase insert error:", JSON.stringify(error));
     return { error: "שגיאה ביצירת התור: " + error.message };
   }
 
