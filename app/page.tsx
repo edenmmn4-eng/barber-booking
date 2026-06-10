@@ -12,7 +12,7 @@ export default function HomePage() {
         <p className="text-zinc-400 text-lg">
           קבע תור בקלות ובמהירות. בחר שירות, שעה, ושלם פיקדון.
         </p>
-        <Link href="/book" className="inline-flex items-center justify-center h-11 px-8 rounded-lg bg-amber-400 hover:bg-amber-500 text-black font-bold w-full transition-colors">
+        <Link href="/book?shop=c193e26d-7554-4f77-9447-9c7c013825f2" className="inline-flex items-center justify-center h-11 px-8 rounded-lg bg-amber-400 hover:bg-amber-500 text-black font-bold w-full transition-colors">
           קבע תור עכשיו
         </Link>
         <Link href="/login" className="text-zinc-500 hover:text-zinc-300 text-sm transition-colors">
