@@ -1,11 +1,31 @@
-import twilio from 'twilio'
 import { Appointment, Service } from '@/types'
 
-function getClient() {
-  return twilio(
-    process.env.TWILIO_ACCOUNT_SID!,
-    process.env.TWILIO_AUTH_TOKEN!
-  )
+const INSTANCE_ID = process.env.GREENAPI_ID_INSTANCE
+const API_TOKEN = process.env.GREENAPI_API_TOKEN
+const API_URL = `https://7107.api.greenapi.com`
+
+function toWhatsAppId(phone: string): string {
+  const digits = phone.replace(/\D/g, '')
+  const normalized = digits.startsWith('972') ? digits : '972' + digits.replace(/^0/, '')
+  return `${normalized}@c.us`
+}
+
+async function sendMessage(phone: string, message: string) {
+  const chatId = toWhatsAppId(phone)
+  const url = `${API_URL}/waInstance${INSTANCE_ID}/sendMessage/${API_TOKEN}`
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ chatId, message }),
+  })
+
+  if (!res.ok) {
+    const err = await res.text()
+    throw new Error(`Green API error: ${err}`)
+  }
+
+  return res.json()
 }
 
 export async function sendBookingConfirmation(
@@ -32,11 +52,7 @@ ${shopAddress ? `📍 כתובת: ${shopAddress}` : ''}
 לביטול או שינוי, אנא צור קשר איתנו.
 — ${shopName}`
 
-  return getClient().messages.create({
-    from: process.env.TWILIO_WHATSAPP_FROM!,
-    to: `whatsapp:${appointment.client_phone}`,
-    body: message,
-  })
+  return sendMessage(appointment.client_phone, message)
 }
 
 export async function sendBookingReminder(
@@ -52,9 +68,5 @@ export async function sendBookingReminder(
 
 מחכים לך! — ${shopName}`
 
-  return getClient().messages.create({
-    from: process.env.TWILIO_WHATSAPP_FROM!,
-    to: `whatsapp:${appointment.client_phone}`,
-    body: message,
-  })
+  return sendMessage(appointment.client_phone, message)
 }

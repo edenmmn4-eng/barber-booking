@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { stripe } from "@/lib/stripe";
+import { sendBookingConfirmation } from "@/lib/whatsapp";
 import { z } from "zod";
 
 const BookingSchema = z.object({
@@ -81,6 +82,26 @@ export async function createBooking(formData: unknown) {
   if (error) {
     console.error("Supabase insert error:", JSON.stringify(error));
     return { error: "שגיאה ביצירת התור: " + error.message };
+  }
+
+  // Send WhatsApp confirmation if no deposit required
+  if (!(service.deposit_amount > 0 && stripeConfigured)) {
+    try {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("shop_name, address")
+        .eq("id", data.shop_id)
+        .single();
+
+      await sendBookingConfirmation(
+        { ...data, id: "", whatsapp_sent_at: null, deposit_paid: 0 } as any,
+        service,
+        profile?.shop_name ?? "הספר",
+        profile?.address ?? null
+      );
+    } catch (e) {
+      console.error("WhatsApp failed:", e);
+    }
   }
 
   return {
